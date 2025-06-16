@@ -8,6 +8,9 @@ FROM $BASE_IMAGE as dev
 ARG TOOLKIT_USER_ID=13011
 ARG TOOLKIT_GROUP_ID=13011
 
+#to avoid apt-get Ubuntu public key error
+RUN rm /etc/apt/sources.list.d/cuda.list
+RUN rm /etc/apt/sources.list.d/nvidia-ml.list
 RUN apt-get update \
     # Required to save git hashes
     && apt-get install -y -q git curl unzip make gettext \
@@ -155,8 +158,7 @@ RUN set -eux; \
     chown -R $TOOLKIT_USER_ID:$TOOLKIT_GROUP_ID /app/.local/rustup;
 
 # Install Haskell toolchain
-ENV BOOTSTRAP_HASKELL_NONINTERACTIVE=yes \
-    BOOTSTRAP_HASKELL_NO_UPGRADE=yes \
+ENV BOOTSTRAP_HASKELL_MINIMAL=yes \ 
     GHCUP_USE_XDG_DIRS=yes \
     GHCUP_INSTALL_BASE_PREFIX=/app \
     CABAL_DIR=/app/.cabal \
@@ -171,22 +173,25 @@ RUN buildDeps=" \
     apt-get update \
     && apt-get install -y --no-install-recommends $buildDeps $deps \
     && curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh \
-    && ghcup install ghc \
-    && ghcup install cabal \
+    && ghcup install ghc base-4.14.1.0 \
+    && ghcup set ghc "8.10.4" \
+    && export PATH="/app/.ghcup/bin:$PATH" \
+    && ghcup install cabal 3.10.1.0 \
     && cabal update \
     && apt-get install -y --no-install-recommends git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && git clone https://github.com/haskell/cabal.git \
     && cd cabal \
-    && git checkout f5f8d933db229d30e6fc558f5335f0a4e85d7d44 \
-    && sed -i 's/3.5.0.0/3.6.0.0/' */*.cabal \
-    && cabal install cabal-install/ \
+    && git checkout HEAD \
+    && sed -i 's/3.5.0.0/3.10.1.0/' */*.cabal \
+    && cabal install --package-env . cabal-install/ \
         --allow-newer=Cabal-QuickCheck:Cabal \
         --allow-newer=Cabal-described:Cabal \
         --allow-newer=Cabal-tree-diff:Cabal \
         --allow-newer=cabal-install:Cabal \
         --allow-newer=cabal-install-solver:Cabal \
+	    --allow-newer=cabal-testsuite \
     && cd .. \
     && rm -rf cabal/ \
     && rm -rf /app/.cabal/packages/* \
