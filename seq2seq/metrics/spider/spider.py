@@ -30,7 +30,7 @@ _CITATION = """\
 }
 """
 
-_URL = "https://drive.google.com/uc?export=download&id=1_AckYkinAnhqmRQtGsQgUKAnTHxxX5J0"
+_URL = "https://drive.usercontent.google.com/download?id=1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J&export=download&confirm=t&uuid=0b8f1c3e-2d4a-4b6c-9f5d-7e8f3c1b2a3c&at=ALh9qXQwYkW7gZy5z6j4v5s5t6s7"
 
 
 @datasets.utils.file_utils.add_start_docstrings(_DESCRIPTION, _KWARGS_DESCRIPTION)
