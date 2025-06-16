@@ -76,7 +76,7 @@ build-train-image:
 		--cache-from type=registry,ref=tscholak/$(TRAIN_IMAGE_NAME):cache \
 		--cache-to type=inline \
 		--push \
-		git@github.com:ElementAI/picard#$(GIT_HEAD_REF)
+		https://github.com/WANG-YIDA/picard.git#$(GIT_HEAD_REF)
 
 .PHONY: pull-train-image
 pull-train-image:
